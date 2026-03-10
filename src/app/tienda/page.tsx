@@ -50,10 +50,32 @@ export default function StorePage() {
             .catch(() => setLoading(false));
     }, []);
 
-    const filteredProducts = products.filter(p =>
-        (filter === "Todos" || (p.categoria || p.category) === filter) &&
-        (p.titulo.toLowerCase().includes(search.toLowerCase()) || p.modelo.toLowerCase().includes(search.toLowerCase()))
-    );
+    const filteredProducts = products.filter(p => {
+        const searchMatch = p.titulo.toLowerCase().includes(search.toLowerCase()) ||
+            p.modelo.toLowerCase().includes(search.toLowerCase());
+
+        if (filter === "Todos") return searchMatch;
+
+        // Mapeo manual de categorías del frontend a las de Syscom
+        const categoryMap: any = {
+            "CCTV": ["Videovigilancia", "Cámaras IP", "DVR", "NVR", "CCTV"],
+            "Control de Acceso": ["Control de Acceso", "Videoporteros IP", "Cerraduras"],
+            "Redes": ["Redes", "Networking", "Wi-Fi", "Switches"],
+            "Energía": ["Energía", "UPS", "Baterías", "Fuentes de Poder"],
+            "Detección de Fuego": ["Detección de Fuego", "Incendio", "Alarmas de Fuego"]
+        };
+
+        const targetCategories = categoryMap[filter] || [filter];
+
+        // Verificamos si alguna categoría del producto coincide
+        const productCategories = p.categorias?.map((c: any) => c.nombre.trim().toLowerCase()) || [];
+
+        const categoryMatch = targetCategories.some((tc: string) =>
+            productCategories.some((pc: string) => pc.includes(tc.toLowerCase()))
+        );
+
+        return categoryMatch && searchMatch;
+    });
 
     return (
         <div className="min-h-screen bg-slate-50 bg-grid pb-20">

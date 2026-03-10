@@ -17,7 +17,8 @@ import {
     Hammer,
     Zap,
     Key,
-    UserPlus
+    UserPlus,
+    Navigation
 } from 'lucide-react'
 import { withAuth } from '@/hoc/withAuth'
 
@@ -30,6 +31,7 @@ import AccesosView from '@/components/dashboard/AccesosView'
 import CalendarView from '@/components/dashboard/CalendarView'
 import TasksView from '@/components/dashboard/TasksView'
 import CRMView from '@/components/dashboard/CRMView'
+import SquadMapView from '@/components/dashboard/SquadMapView'
 import MonitoringSystem from '@/components/dashboard/MonitoringSystem'
 import OrderModal from '@/components/dashboard/OrderModal'
 import { SidebarItem } from '@/components/dashboard/SharedComponents'
@@ -188,6 +190,7 @@ function OperationsDashboard() {
                     <SidebarItem icon={<Key size={18} />} label="Accesos" active={activeTab === 'accesos'} onClick={() => setActiveTab('accesos')} />
                     <SidebarItem icon={<Calendar size={18} />} label="Calendario" active={activeTab === 'calendario'} onClick={() => setActiveTab('calendario')} />
                     <SidebarItem icon={<ClipboardList size={18} />} label="Tareas" active={activeTab === 'tareas'} onClick={() => setActiveTab('tareas')} />
+                    <SidebarItem icon={<Navigation size={18} />} label="Despliegue" active={activeTab === 'mapa'} onClick={() => setActiveTab('mapa')} />
                 </nav>
 
                 <div className="pt-8 border-t border-white/5 space-y-4 text-slate-500">
@@ -292,12 +295,13 @@ function OperationsDashboard() {
                     {activeTab === 'resumen' && <ResumenView setActiveTab={setActiveTab} orders={recentOrders} onMonitor={setMonitoringBranch} MOCK_CLIENTS={MOCK_CLIENTS} />}
                     {activeTab === 'crm' && <CRMView addNotification={addNotification} />}
                     {activeTab === 'clientes' && <ClientesView onMonitor={setMonitoringBranch} MOCK_CLIENTS={MOCK_CLIENTS} />}
-                    {activeTab === 'ordenes' && <OrdenesView orders={recentOrders} onFinishOrder={(id: string) => {
+                    {activeTab === 'ordenes' && <OrdenesView orders={recentOrders} addNotification={addNotification} onFinishOrder={(id: string) => {
                         setRecentOrders(prev => prev.map(o => o.id === id ? { ...o, status: 'Completada' } : o))
                         const order = recentOrders.find(o => o.id === id)
                         addNotification(`MISIÓN ${id} COMPLETADA. INGENIERO ${order?.technician.toUpperCase()} DISPONIBLE.`, 'success')
                     }} />}
                     {activeTab === 'equipo' && <EquipoView orders={recentOrders} MOCK_TECHNICIANS={MOCK_TECHNICIANS} />}
+                    {activeTab === 'mapa' && <SquadMapView />}
                     {activeTab === 'accesos' && <AccesosView />}
                     {activeTab === 'calendario' && <CalendarView addNotification={addNotification} />}
                     {activeTab === 'tareas' && <TasksView addNotification={addNotification} />}
@@ -313,6 +317,10 @@ function OperationsDashboard() {
                 <button onClick={() => setActiveTab('crm')} className={`flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeTab === 'crm' ? 'text-primary bg-primary/10' : 'text-slate-500 hover:text-slate-300'}`}>
                     <Users size={20} />
                     <span className="text-[8px] font-black uppercase mt-1">CRM</span>
+                </button>
+                <button onClick={() => setActiveTab('mapa')} className={`flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeTab === 'mapa' ? 'text-primary bg-primary/10' : 'text-slate-500 hover:text-slate-300'}`}>
+                    <Navigation size={20} />
+                    <span className="text-[8px] font-black uppercase mt-1">Mapa</span>
                 </button>
 
                 {/* Floating Action Button for Mobile */}

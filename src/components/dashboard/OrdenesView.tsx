@@ -1,10 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import { Filter, MapPin } from 'lucide-react'
+import FirmaModal from './FirmaModal'
 
-export default function OrdenesView({ orders, onFinishOrder }: any) {
+export default function OrdenesView({ orders, onFinishOrder, addNotification }: any) {
+    const [orderToSign, setOrderToSign] = useState<any>(null)
+
     return (
         <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
+            {orderToSign && (
+                <FirmaModal
+                    order={orderToSign}
+                    onClose={() => setOrderToSign(null)}
+                    onConfirm={onFinishOrder}
+                    addNotification={addNotification}
+                />
+            )}
+
             <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-black italic uppercase tracking-tighter">Work <span className="text-primary underline underline-offset-8">Logistic</span></h2>
                 <div className="flex gap-3">
@@ -50,7 +63,7 @@ export default function OrdenesView({ orders, onFinishOrder }: any) {
                                     <td className="px-10 py-8 text-right">
                                         {o.status !== 'Completada' ? (
                                             <button
-                                                onClick={() => onFinishOrder(o.id)}
+                                                onClick={() => setOrderToSign(o)}
                                                 className="bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-glow-hover whitespace-nowrap"
                                             >
                                                 Cerrar Orden

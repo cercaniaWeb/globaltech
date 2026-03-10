@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import ARMeasurement from './ARMeasurement'
 
+import CotizadorModal from './CotizadorModal'
+
 type CRMLead = {
     id: string
     created_at: string
@@ -30,6 +32,7 @@ export default function CRMView({ addNotification }: any) {
     const [leads, setLeads] = useState<CRMLead[]>([])
     const [loading, setLoading] = useState(true)
     const [activeLeadForAR, setActiveLeadForAR] = useState<CRMLead | null>(null)
+    const [activeLeadForQuote, setActiveLeadForQuote] = useState<CRMLead | null>(null)
     const [searchTerm, setSearchTerm] = useState('')
 
     const fetchLeads = async () => {
@@ -78,6 +81,17 @@ export default function CRMView({ addNotification }: any) {
 
     return (
         <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
+            {activeLeadForQuote && (
+                <CotizadorModal
+                    lead={activeLeadForQuote}
+                    onClose={() => {
+                        setActiveLeadForQuote(null)
+                        // Auto-update status to Cotizado? Optional, but nice
+                        supabase.from('crm_leads').update({ status: 'Cotizado' }).eq('id', activeLeadForQuote.id).then(() => fetchLeads())
+                    }}
+                    addNotification={addNotification}
+                />
+            )}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black italic uppercase tracking-tighter">Pipeline <span className="text-primary italic underline underline-offset-8">CRM</span></h2>
@@ -132,22 +146,23 @@ export default function CRMView({ addNotification }: any) {
                                         <button className="p-1.5 hover:bg-white/5 rounded-lg text-slate-600 transition-colors"><MoreVertical size={14} /></button>
                                     </div>
 
-                                    <div className="flex items-center gap-4 py-2">
-                                        <div className="flex-1 space-y-1">
-                                            <div className="flex items-center gap-1.5 text-emerald-500 font-mono font-black text-xs">
-                                                <DollarSign size={10} /> {lead.estimated_value.toLocaleString()}
-                                            </div>
-                                        </div>
+                                    <div className="flex items-center justify-between border-t border-white/5 py-4 mt-2">
+                                        <button
+                                            onClick={() => setActiveLeadForQuote(lead)}
+                                            className="flex-1 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition-colors group/tool"
+                                        >
+                                            <DollarSign size={12} className="group-hover/tool:animate-pulse" /> Cotizar
+                                        </button>
                                         <div className="h-8 w-px bg-white/5"></div>
                                         <button
                                             onClick={() => setActiveLeadForAR(lead)}
-                                            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors group/tool"
+                                            className="flex-1 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors group/tool"
                                         >
                                             <Ruler size={12} className="group-hover/tool:animate-pulse" /> Leviton 3D
                                         </button>
                                     </div>
 
-                                    <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+                                    <div className="pt-2 border-t border-white/5 flex justify-between items-center">
                                         <div className="flex -space-x-2">
                                             <div className="w-5 h-5 rounded-full bg-slate-800 border border-slate-900 flex items-center justify-center text-[8px] font-black">JS</div>
                                         </div>

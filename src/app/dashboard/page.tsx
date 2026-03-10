@@ -190,7 +190,6 @@ function OperationsDashboard() {
                     <SidebarItem icon={<Key size={18} />} label="Accesos" active={activeTab === 'accesos'} onClick={() => setActiveTab('accesos')} />
                     <SidebarItem icon={<Calendar size={18} />} label="Calendario" active={activeTab === 'calendario'} onClick={() => setActiveTab('calendario')} />
                     <SidebarItem icon={<ClipboardList size={18} />} label="Tareas" active={activeTab === 'tareas'} onClick={() => setActiveTab('tareas')} />
-                    <SidebarItem icon={<Navigation size={18} />} label="Despliegue" active={activeTab === 'mapa'} onClick={() => setActiveTab('mapa')} />
                 </nav>
 
                 <div className="pt-8 border-t border-white/5 space-y-4 text-slate-500">
@@ -317,10 +316,6 @@ function OperationsDashboard() {
                 <button onClick={() => setActiveTab('crm')} className={`flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeTab === 'crm' ? 'text-primary bg-primary/10' : 'text-slate-500 hover:text-slate-300'}`}>
                     <Users size={20} />
                     <span className="text-[8px] font-black uppercase mt-1">CRM</span>
-                </button>
-                <button onClick={() => setActiveTab('mapa')} className={`flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeTab === 'mapa' ? 'text-primary bg-primary/10' : 'text-slate-500 hover:text-slate-300'}`}>
-                    <Navigation size={20} />
-                    <span className="text-[8px] font-black uppercase mt-1">Mapa</span>
                 </button>
 
                 {/* Floating Action Button for Mobile */}

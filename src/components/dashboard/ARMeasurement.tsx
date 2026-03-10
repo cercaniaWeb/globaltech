@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { XR, createXRStore } from '@react-three/xr'
+import { XR, createXRStore, useXRHitTest } from '@react-three/xr'
 import { OrbitControls, Text, Line, Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { X, Ruler, Save, Trash2, Box, Info } from 'lucide-react'
@@ -58,9 +58,42 @@ function MeasurementLine({ start, end }: { start: THREE.Vector3, end: THREE.Vect
     )
 }
 
+const matrixHelper = new THREE.Matrix4()
+
+function Reticle({ onHit }: { onHit: (pos: THREE.Vector3) => void }) {
+    const [hitPoint, setHitPoint] = useState<THREE.Vector3 | null>(null)
+
+    useXRHitTest(
+        (results, getWorldMatrix) => {
+            if (results.length === 0) {
+                setHitPoint(null)
+                return
+            }
+            getWorldMatrix(matrixHelper, results[0])
+            const position = new THREE.Vector3().setFromMatrixPosition(matrixHelper)
+            setHitPoint(position)
+        },
+        'viewer'
+    )
+
+    if (!hitPoint) return null
+
+    return (
+        <group position={hitPoint}>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} onPointerDown={() => onHit(hitPoint.clone())}>
+                <ringGeometry args={[0.08, 0.1, 32]} />
+                <meshStandardMaterial color="#2563eb" emissive="#2563eb" emissiveIntensity={2} />
+            </mesh>
+            <mesh>
+                <sphereGeometry args={[0.015]} />
+                <meshStandardMaterial color="white" />
+            </mesh>
+        </group>
+    )
+}
+
 function ARSceneProxy({ setPoints, points }: any) {
-    const handlePointerDown = (e: any) => {
-        const position = e.point || new THREE.Vector3(0, 0, 0)
+    const handleHit = (position: THREE.Vector3) => {
         if (points.length >= 2) {
             setPoints([position])
         } else {
@@ -71,15 +104,17 @@ function ARSceneProxy({ setPoints, points }: any) {
     return (
         <group>
             <MeasurementPoints points={points} setPoints={setPoints} />
+            <Reticle onHit={handleHit} />
+
+            {/* Desktop Fallback */}
             <mesh
                 rotation={[-Math.PI / 2, 0, 0]}
                 position={[0, -0.5, 0]}
-                receiveShadow
-                onPointerDown={handlePointerDown}
+                onPointerDown={(e) => handleHit(e.point)}
+                visible={false}
             >
-                <planeGeometry args={[10, 10]} />
-                <meshStandardMaterial color="#0f172a" transparent opacity={0.2} />
-                <gridHelper args={[10, 10, "#1e293b", "#0f172a"]} rotation={[Math.PI / 2, 0, 0]} />
+                <planeGeometry args={[20, 20]} />
+                <meshStandardMaterial transparent opacity={0} />
             </mesh>
         </group>
     )

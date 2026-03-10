@@ -17,8 +17,7 @@ import {
     Hammer,
     Zap,
     Key,
-    UserPlus,
-    Navigation
+    UserPlus
 } from 'lucide-react'
 import { withAuth } from '@/hoc/withAuth'
 
@@ -31,7 +30,6 @@ import AccesosView from '@/components/dashboard/AccesosView'
 import CalendarView from '@/components/dashboard/CalendarView'
 import TasksView from '@/components/dashboard/TasksView'
 import CRMView from '@/components/dashboard/CRMView'
-import SquadMapView from '@/components/dashboard/SquadMapView'
 import MonitoringSystem from '@/components/dashboard/MonitoringSystem'
 import OrderModal from '@/components/dashboard/OrderModal'
 import { SidebarItem } from '@/components/dashboard/SharedComponents'
@@ -300,7 +298,6 @@ function OperationsDashboard() {
                         addNotification(`MISIÓN ${id} COMPLETADA. INGENIERO ${order?.technician.toUpperCase()} DISPONIBLE.`, 'success')
                     }} />}
                     {activeTab === 'equipo' && <EquipoView orders={recentOrders} MOCK_TECHNICIANS={MOCK_TECHNICIANS} />}
-                    {activeTab === 'mapa' && <SquadMapView />}
                     {activeTab === 'accesos' && <AccesosView />}
                     {activeTab === 'calendario' && <CalendarView addNotification={addNotification} />}
                     {activeTab === 'tareas' && <TasksView addNotification={addNotification} />}

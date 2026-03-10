@@ -265,8 +265,8 @@ function OperationsDashboard() {
                     }} />}
                     {activeTab === 'equipo' && <EquipoView orders={recentOrders} />}
                     {activeTab === 'accesos' && <AccesosView />}
-                    {activeTab === 'calendario' && <CalendarView />}
-                    {activeTab === 'tareas' && <TasksView />}
+                    {activeTab === 'calendario' && <CalendarView addNotification={addNotification} />}
+                    {activeTab === 'tareas' && <TasksView addNotification={addNotification} />}
                 </div>
             </main>
 
@@ -943,7 +943,7 @@ function CameraCell({ id, label, bitrate, image }: { id: string, label: string, 
 export default withAuth(OperationsDashboard)
 
 
-function TasksView() {
+function TasksView({ addNotification }: { addNotification: any }) {
     const [tasks, setTasks] = useState<any[]>([])
     const [newTask, setNewTask] = useState({ title: '', priority: 'media', due_date: '' })
     const [loading, setLoading] = useState(true)
@@ -979,10 +979,14 @@ function TasksView() {
     }
 
     const toggleTask = async (task: any) => {
-        const newStatus = task.status === 'completada' ? 'pendiente' : 'completada'
-        const { error } = await supabase.from('tasks').update({ status: newStatus }).eq('id', task.id)
+        const states = ['pendiente', 'en_proceso', 'completada']
+        const currentIndex = states.indexOf(task.status)
+        const nextStatus = states[(currentIndex + 1) % states.length]
+
+        const { error } = await supabase.from('tasks').update({ status: nextStatus }).eq('id', task.id)
         if (!error) {
-            setTasks(tasks.map(t => t.id === task.id ? { ...t, status: newStatus } : t))
+            setTasks(tasks.map(t => t.id === task.id ? { ...t, status: nextStatus } : t))
+            addNotification(`Tarea "${task.title.toUpperCase()}" movida a ${nextStatus.replace('_', ' ').toUpperCase()}`, 'info')
         }
     }
 
@@ -1033,7 +1037,10 @@ function TasksView() {
                                     onClick={() => toggleTask(task)}
                                     className="p-5 glass border-white/5 rounded-2xl hover:border-primary/30 transition-all cursor-pointer group">
                                     <div className="flex justify-between items-start mb-2">
-                                        <p className={`text-[11px] font-black uppercase tracking-tight ${task.status === 'completada' ? 'line-through text-slate-600' : 'text-white'}`}>{task.title}</p>
+                                        <p className="text-[11px] font-black uppercase tracking-tight text-white flex items-center justify-between">
+                                            <span className={task.status === 'completada' ? 'line-through text-slate-600' : ''}>{task.title}</span>
+                                            <ArrowRight size={10} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </p>
                                         <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${task.priority === 'alta' ? 'bg-red-500/10 text-red-500' : 'bg-slate-500/10 text-slate-500'}`}>{task.priority}</span>
                                     </div>
                                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
@@ -1049,7 +1056,7 @@ function TasksView() {
     )
 }
 
-function CalendarView() {
+function CalendarView({ addNotification }: { addNotification: any }) {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [events, setEvents] = useState<any[]>([])
     const [showEventModal, setShowEventModal] = useState(false)

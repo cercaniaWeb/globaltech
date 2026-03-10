@@ -46,7 +46,7 @@ function MeasurementLine({ start, end }: { start: THREE.Vector3, end: THREE.Vect
                     <Text
                         fontSize={0.04}
                         color="white"
-                        font="/fonts/inter-bold.woff"
+                        font="/fonts/inter-bold.ttf"
                         anchorX="center"
                         anchorY="middle"
                     >

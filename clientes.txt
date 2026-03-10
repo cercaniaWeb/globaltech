@@ -1,0 +1,4 @@
+Cliente Demo 1	admin	root@GTD	demo1@email.com
+Cliente Demo 2	user1	password123	demo2@email.com
+Grupo Moravi	moravi	root@GTD	notif@moravi.mx
+Corporativo XP	admin	12345678y	it@xp.com

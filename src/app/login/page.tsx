@@ -13,6 +13,7 @@ import Link from 'next/link'
 const MOCK_USERS = [
     { email: 'admin@globaltelecom.mx', password: 'admin123', name: 'Luis Romero', role: 'admin' },
     { email: 'cliente@demo.mx', password: 'demo123', name: 'Carlos Méndez', role: 'client' },
+    { email: 'juan@globaltelecom.mx', password: 'tech123', name: 'Juan Pérez', role: 'tech' },
 ]
 
 export default function LoginPage() {
@@ -42,7 +43,9 @@ export default function LoginPage() {
         localStorage.setItem('gt_user', JSON.stringify(user))
 
         if (user.role === 'admin') {
-            router.push('/admin')
+            router.push('/dashboard') // Redirigir al dashboard de operaciones
+        } else if (user.role === 'tech') {
+            router.push('/tech') // Redirigir al panel del técnico
         } else {
             router.push('/portal')
         }
@@ -71,18 +74,23 @@ export default function LoginPage() {
                 </div>
 
                 {/* Credenciales Demo */}
-                <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5 space-y-3">
+                <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5 space-y-4">
                     <div className="flex items-center gap-2 text-blue-400 text-[10px] font-black uppercase tracking-widest">
                         <AlertTriangle size={14} /> Cuentas de Demostración
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-[10px]">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[9px]">
                         <div className="space-y-1">
-                            <p className="font-black text-slate-300 uppercase tracking-widest">Admin</p>
+                            <p className="font-black text-slate-300 uppercase tracking-widest border-b border-white/5 pb-1">Admin Ops</p>
                             <p className="text-slate-500">admin@globaltelecom.mx</p>
                             <p className="text-slate-500">admin123</p>
                         </div>
                         <div className="space-y-1">
-                            <p className="font-black text-slate-300 uppercase tracking-widest">Cliente</p>
+                            <p className="font-black text-slate-300 uppercase tracking-widest border-b border-white/5 pb-1">Técnico Campo</p>
+                            <p className="text-slate-500">juan@globaltelecom.mx</p>
+                            <p className="text-slate-500">tech123</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="font-black text-slate-300 uppercase tracking-widest border-b border-white/5 pb-1">Socio Cliente</p>
                             <p className="text-slate-500">cliente@demo.mx</p>
                             <p className="text-slate-500">demo123</p>
                         </div>
